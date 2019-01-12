@@ -53,7 +53,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                     output += "</br>"
                     output += "<a href=/restaurants/%s/edit>Edit</a>" % restaurant.id
                     output += "</br>"
-                    output += "<a href=#>Delete</a>"
+                    output += "<a href=/restaurants/%s/delete>Delete</a>" %restaurant.id
                     output += "<br></br>"
                 output += "</body></html>"
                 self.wfile.write(output)
@@ -96,6 +96,24 @@ class webserverHandler(BaseHTTPRequestHandler):
                     self.end_headers()
                     output = "that restaurant is not found"
                 self.wfile.write(output)
+
+            if self.path.endswith("/delete"):
+                restaurantId = self.path.split("/")[2]
+                restaurant = session.query(Restaurant).filter_by(id=restaurantId).one()
+                if restaurant:
+                    self.send_response(200)
+                    self.send_header('content-type','text/html')
+                    self.end_headers()
+                    output = ""
+                    output += "<html><body>"
+                    output += "Are you sure you want to delete?</br>"
+                    output += "<form method='POST' enctype='multipart/form-data' action='/restaurants/%s/delete'>" %restaurantId
+                    output += "<input type='submit' value='Delete'>"
+                    output += "</form>"
+                    output += "</body></html>"
+
+                    self.wfile.write(output)
+
 
 
                 
@@ -144,8 +162,23 @@ class webserverHandler(BaseHTTPRequestHandler):
                         session.commit()
 
                         self.send_response(301)
+                        self.send_header('content-type','text/html')
                         self.send_header('Location','/restaurants/%s/edit' % restaurantId)
                         self.end_headers()
+
+            if self.path.endswith("/delete"):
+            
+                restaurantId = self.path.split("/")[2]
+                restaurant = session.query(Restaurant).filter_by(id=restaurantId).one()
+                if restaurant:
+                    session.delete(restaurant)
+                    session.commit()
+                    print "deleted"
+
+                    self.send_response(301)
+                    self.send_header('Location', '/restaurants')
+                    self.end_headers()
+
             
         except:
             pass
