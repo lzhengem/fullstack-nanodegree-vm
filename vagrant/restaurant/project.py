@@ -10,9 +10,8 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-@app.route('/') #decorator in python. this means that whenever we get a hit on / or /hello, the HelloWorld() function gets invoked
-@app.route('/hello')
-def HelloWorld():
+@app.route('/restaurants/<int:restaurant_id>')
+def restaurantMenu(restaurant_id):
     restaurant = session.query(Restaurant).first()
     items = session.query(MenuItem).filter_by(restaurant_id = restaurant.id)
     output = ''
