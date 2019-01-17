@@ -7,6 +7,9 @@ app = Flask(__name__) #create instance of flask, using the current name of runni
 engine = create_engine('sqlite:///restaurantmenu.db')
 Base.metadata.bind = engine
 
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
 @app.route('/') #decorator in python. this means that whenever we get a hit on / or /hello, the HelloWorld() function gets invoked
 @app.route('/hello')
 def HelloWorld():
