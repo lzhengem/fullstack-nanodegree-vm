@@ -13,6 +13,9 @@ session = DBSession()
 @app.route('/') #decorator in python. this means that whenever we get a hit on / or /hello, the HelloWorld() function gets invoked
 @app.route('/hello')
 def HelloWorld():
+    restaurant = session.query(Restaurant).first()
+    items = session.query(MenuItem).filter_by(restaurant_id = restaurant.id)
+    
     return "Hello World" #writes out hello world to the browser
 
 if __name__ == '__main__': #application run by the Python interpreter gets a name 
