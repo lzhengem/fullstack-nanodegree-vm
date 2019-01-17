@@ -1,6 +1,11 @@
 from flask import Flask
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Restaurant, MenuItem
 app = Flask(__name__) #create instance of flask, using the current name of running application as argument
 
+engine = create_engine('sqlite:///restaurantmenu.db')
+Base.metadata.bind = engine
 
 @app.route('/') #decorator in python. this means that whenever we get a hit on / or /hello, the HelloWorld() function gets invoked
 @app.route('/hello')
