@@ -15,8 +15,12 @@ session = DBSession()
 def HelloWorld():
     restaurant = session.query(Restaurant).first()
     items = session.query(MenuItem).filter_by(restaurant_id = restaurant.id)
-    
-    return "Hello World" #writes out hello world to the browser
+    output = ''
+    for i in items:
+        output += i.name
+        output += '</br>'
+
+    return output
 
 if __name__ == '__main__': #application run by the Python interpreter gets a name 
 # variable set to __main__, whereas all other imported python files get a __name__ set to the actual name of the python file
