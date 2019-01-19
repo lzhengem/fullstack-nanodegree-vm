@@ -17,7 +17,7 @@ def restaurantMenu(restaurant_id):
     # session.close()
     return render_template('menu.html', restaurant=restaurant, items=items)
 
-@app.route('/restaurants/<int:restaurant_id>/new/')    
+@app.route('/restaurants/<int:restaurant_id>/new/', methods=['GET','POST'])    
 def newMenuItem(restaurant_id):
     return "page to create a new menu item. Task 1 complete!"
 
