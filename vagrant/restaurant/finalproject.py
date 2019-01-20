@@ -4,10 +4,10 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem
 app = Flask(__name__)
 
-engine = create_engine('sqlite:///restaurantmenu.db', connect_args={'check_same_thread':False})
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind = engine)
-session = DBSession()
+# engine = create_engine('sqlite:///restaurantmenu.db', connect_args={'check_same_thread':False})
+# Base.metadata.bind = engine
+# DBSession = sessionmaker(bind = engine)
+# session = DBSession()
 
 @app.route("/")
 @app.route("/restaurants/")
