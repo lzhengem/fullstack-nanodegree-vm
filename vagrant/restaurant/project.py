@@ -27,9 +27,6 @@ def newMenuItem(restaurant_id):
     else:
         return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
-
-    return "page to create a new menu item. Task 1 complete!"
-
 # Task 2: Create route for editMenuItem function here
 
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/edit/', methods=["GET","POST"])
@@ -43,16 +40,43 @@ def editMenuItem(restaurant_id, menu_id):
         return redirect(url_for('restaurantMenu',restaurant_id=restaurant_id))
     else:
         return render_template('editmenuitem.html', restaurant_id = restaurant_id, menu_id=menu_id,item=editedItem)
-    return "page to edit a menu item. Task 2 complete!"
 
 # Task 3: Create a route for deleteMenuItem function here
 
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/delete/', methods=["GET","POST"])
 def deleteMenuItem(restaurant_id, menu_id):
-    return "page to delete a menu item. Task 3 complete!"
+    item = session.query(MenuItem).filter_by(id=menu_id).one()
+    if request.method == 'POST':
+        session.delete(item)
+        session.commit()
+        return redirect(url_for('restaurantMenu',restaurant_id=restaurant_id))
+    else:
+        return render_template('deletemenuitem.html', item=item)
 
 if __name__ == '__main__': #application run by the Python interpreter gets a name 
 # variable set to __main__, whereas all other imported python files get a __name__ set to the actual name of the python file
                             #this makes sure that this code only gets run if it is run from the python interpreter, not as an imported module 
     app.debug = True    #this allows you not to have to restart your server everytime you edit soemthing
     app.run(host='0.0.0.0', port=5000) #makes vagrant to listen to all public ip addresses
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
