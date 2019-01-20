@@ -24,6 +24,8 @@ def newMenuItem(restaurant_id):
         session.add(newItem)
         session.commit()
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
+    else:
+        return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
 
     return "page to create a new menu item. Task 1 complete!"
