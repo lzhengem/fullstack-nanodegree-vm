@@ -2,15 +2,17 @@
     <body>
         
         <h1>{{restaurant.name}}</h1>
-
-        <p><a href='#'>New menu Item</a></p>
-
+        {% if not items %}
+            You currently have no menu items.
+        {% endif %}
+        <p><a href="#">Create new menu item</a></p>
         {% for item in items %}
         {{ item.name}}
         <p><a href='#'>Edit</a></p>
 
         <p><a href='#'>Delete</a></p>
         {% endfor %}
+
     </body>
 
 </html>
