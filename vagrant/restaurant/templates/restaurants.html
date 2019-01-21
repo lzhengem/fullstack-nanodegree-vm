@@ -1,10 +1,13 @@
 <html>
     <body>
         <h1>Restaurants:</h1>
+        <a href="#">Add new restaurant</a>
         {% for restaurant in restaurants %}
+        <br>
         <p>{{restaurant.name}}</p>
         <p><a href='#'>Edit Restaurant</a></p>
         <p><a href='#'>Delete Restaurant</a></p>
+
 
         {% endfor %}
     </body>
