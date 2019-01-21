@@ -34,9 +34,11 @@ def editRestaurant(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == 'POST': #if it was a post request
         if request.form['name']: #and if they entered a name, update it in the database
-            restaurant.name = request.form['name']
+            name = request.form['name']
+            restaurant.name = name
             session.add(restaurant)
             session.commit()
+            flash("%s has been edited " % name)
         return redirect(url_for('showRestaurants'))
     else:
         return render_template('editRestaurant.html',restaurant=restaurant)
@@ -45,8 +47,10 @@ def editRestaurant(restaurant_id):
 def deleteRestaurant(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == "POST":
+        name = restaurant.name
         session.delete(restaurant)
         session.commit()
+        flash("%s has been deleted " % name)
         return redirect(url_for('showRestaurants'))
     else:
         return render_template('deleteRestaurant.html',restaurant=restaurant)
@@ -63,11 +67,13 @@ def newMenuItem(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == "POST":
         if request.form["name"]:
-            item = MenuItem(name = request.form["name"], restaurant_id=restaurant.id,
+            name = request.form["name"]
+            item = MenuItem(name = name, restaurant_id=restaurant.id,
                             description=request.form["description"],price=request.form["price"],
                             course=request.form["course"])
             session.add(item)
             session.commit()
+            flash(" %s has been created" % name)
         return redirect(url_for('showMenu', restaurant_id =restaurant.id))
     else:
         return render_template('newMenuItem.html',restaurant=restaurant)
