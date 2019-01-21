@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem
@@ -31,9 +31,17 @@ def showRestaurants():
 def newRestaurant():
     return render_template('newRestaurant.html')
 
-@app.route("/restaurant/<int:restaurant_id>/edit/")
+@app.route("/restaurant/<int:restaurant_id>/edit/",methods=["GET","POST"])
 def editRestaurant(restaurant_id):
-    return render_template('editRestaurant.html',restaurant=restaurant)
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    if request.method == 'POST': #if it was a post request
+        if request.form['name']: #and if they entered a name, update it in the database
+            restaurant.name = request.form['name']
+            session.add(restaurant)
+            session.commit()
+        return redirect(url_for('showRestaurants'))
+    else:
+        return render_template('editRestaurant.html',restaurant=restaurant)
 
 @app.route("/restaurant/<int:restaurant_id>/delete/")
 def deleteRestaurant(restaurant_id):
