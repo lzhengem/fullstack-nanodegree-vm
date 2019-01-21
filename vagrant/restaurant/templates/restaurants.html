@@ -4,7 +4,7 @@
         <a href="{{url_for('newRestaurant')}}">Add new restaurant</a>
         {% for restaurant in restaurants %}
         <br>
-        <p>{{restaurant.name}}</p>
+        <p><a href='{{url_for('showMenu',restaurant_id=restaurant.id)}}'>{{restaurant.name}}</a></p>
         <p><a href='{{url_for('editRestaurant',restaurant_id=restaurant.id)}}'>Edit Restaurant</a></p>
         <p><a href='{{url_for('deleteRestaurant',restaurant_id=restaurant.id)}}'>Delete Restaurant</a></p>
 
