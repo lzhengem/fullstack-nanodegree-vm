@@ -17,21 +17,22 @@
                 Appetizer
             </p>
             <p>
-                <input type="radio" name="course" value="appetizer"
-                {% if item.course == "appetizer" %}
+                <input type="radio" name="course" value="entree"
+                {% if item.course == "entree" %}
                 {{ "checked" }}
                 {% endif %}>
                 Entree
             </p>
             <p>
-                <input type="radio" name="course" value="appetizer"
-                {% if item.course == "appetizer" %}
+                <input type="radio" name="course" value="dessert"
+                {% if item.course == "dessert" %}
                 {{ "checked" }}
-                {% endif %}> Dessert
+                {% endif %}>
+                Dessert
             </p>
             <p>
-                <input type="radio" name="course" value="appetizer"
-                {% if item.course == "appetizer" %}
+                <input type="radio" name="course" value="beverage"
+                {% if item.course == "beverage" %}
                 {{ "checked" }}
                 {% endif %}> Beverage
             </p>
