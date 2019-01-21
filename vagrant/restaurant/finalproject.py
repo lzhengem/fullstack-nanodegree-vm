@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem
@@ -20,9 +20,11 @@ def showRestaurants():
 def newRestaurant():
     if request.method == "POST":
         if request.form["name"]:
-            restaurant = Restaurant(name = request.form["name"])
+            name = request.form["name"]
+            restaurant = Restaurant(name = name)
             session.add(restaurant)
             session.commit()
+            flash("New restaurant %s created!" % name)
         return redirect(url_for('showRestaurants'))
     else:
         return render_template('newRestaurant.html')
