@@ -73,7 +73,9 @@ def newMenuItem(restaurant_id):
     if request.method == "POST":
         if request.form["name"]:
             print(request.form["name"])
-            item = MenuItem(name = request.form["name"], restaurant_id=restaurant.id)
+            item = MenuItem(name = request.form["name"], restaurant_id=restaurant.id,
+                            description=request.form["description"],price=request.form["price"],
+                            course=request.form["course"])
             session.add(item)
             session.commit()
         return redirect(url_for('showMenu', restaurant_id =restaurant.id))
