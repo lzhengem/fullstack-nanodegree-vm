@@ -10,6 +10,7 @@ DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
 
+
 #Fake Restaurants
 # restaurant = {'name': 'The CRUDdy Crab', 'id': '1'}
 
@@ -23,6 +24,7 @@ session = DBSession()
 @app.route("/")
 @app.route("/restaurants/")
 def showRestaurants():
+    restaurants = session.query(Restaurant).all()
     return render_template('restaurants.html', restaurants=restaurants)
 
 @app.route("/restaurant/new/")
