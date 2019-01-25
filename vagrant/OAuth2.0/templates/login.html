@@ -6,33 +6,33 @@
 
     <body>
         <div id="signinButton">
-            <span class="g-signin" data-scope="openid email profile"
+            <span class="g-signin"
+                data-scope="openid email profile"
                 data-clientid="257374123952-djsd55omuut5s1lrh8acn4d9e5lhnp6i.apps.googleusercontent.com"
                 data-redirecturi="postmessage"
                 data-accesstype="offline"
                 data-cookiepolicy="single_host_origin"
                 data-callback="signInCallback"
-                data-approvalprompt="force">
-                
+                data-approvalprompt="force">                
             </span>
         </div>
 
-          </span>
-        </div>
         <div id="result"></div>
         <script>
+            //must be called signInCallback
             function signInCallback(authResult) {
-                if (authResult['code']) { //if google sent back a code, that means the login was sucessfull
+                if (authResult['code']) { //if google sent back a code, that means the login was sucessful
                     //hide the signin button
                     $('#signinButton').attr('style','display:none');
                     //send the one time use code to the server. if the server responds, write a 'login sucessfull' message to the webpage and then redirect back to the main restaurant page
                     $.ajax({
+                        //asynchronously send a POST request to /gconnect?state={{STATE}}
                         type: 'POST',
                         url: '/gconnect?state={{STATE}}', //need to define gconnect method. STATE is our server state token to prevent requests forgery
                         processData: false, //do not ask jQuery to process response as string
                         contentType: 'application/octet-stream; charset=utf-8', //indicates we are sending arbitrary binary stream of data
                         data: authResult['code'], //the data we will send
-                        //if we get success code,display login successfull
+                        //if we get success code from the post request,display login successfull
                         success: function(result){
                             if(result){ //result is any additional information google server has to give us
                                 $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...')
@@ -45,17 +45,11 @@
                             //if there was no response, tell user to check config
                             else{
                                 $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-
                             }
                         }
                     });
-
                 }
-
             }
-      
-
         </script>
-        
     </body>
 </html>
