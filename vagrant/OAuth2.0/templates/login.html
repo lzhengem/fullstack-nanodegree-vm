@@ -6,7 +6,7 @@
 
     <body>
         <div id="signinButton">
-            <span class="g-signin" data-scope="openid email"
+            <span class="g-signin" data-scope="openid email profile"
                 data-clientid="257374123952-djsd55omuut5s1lrh8acn4d9e5lhnp6i.apps.googleusercontent.com"
                 data-redirecturi="postmessage"
                 data-accesstype="offline"
@@ -21,17 +21,17 @@
         </div>
         <div id="result"></div>
         <script>
-            function signInCallback(authResult){
-                if (authResult['code']){ //if google sent back a code, that means the login was sucessfull
+            function signInCallback(authResult) {
+                if (authResult['code']) { //if google sent back a code, that means the login was sucessfull
                     //hide the signin button
-                    $('signinButton'.attr('style','display:none'));
+                    $('#signinButton').attr('style','display:none');
                     //send the one time use code to the server. if the server responds, write a 'login sucessfull' message to the webpage and then redirect back to the main restaurant page
                     $.ajax({
                         type: 'POST',
-                        url: '/gconnect?state={{STATE}}', //need to define gconnect method. STATE is the server state token
+                        url: '/gconnect?state={{STATE}}', //need to define gconnect method. STATE is our server state token to prevent requests forgery
                         processData: false, //do not ask jQuery to process response as string
-                        contentType: 'application/octet-stream; charset:utf-8', //indicates we are sending arbitrary binary stream of data
-                        data: authResult['code'] //the data we will send
+                        contentType: 'application/octet-stream; charset=utf-8', //indicates we are sending arbitrary binary stream of data
+                        data: authResult['code'], //the data we will send
                         //if we get success code,display login successfull
                         success: function(result){
                             if(result){ //result is any additional information google server has to give us
@@ -53,6 +53,7 @@
                 }
 
             }
+      
 
         </script>
         
