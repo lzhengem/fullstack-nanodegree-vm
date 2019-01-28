@@ -238,7 +238,13 @@ def deleteRestaurant(restaurant_id):
 def showMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
-    return render_template('menu.html', items = items, restaurant = restaurant)
+
+    creator = getUserInfo(restaurant.user_id)
+    #check to see the user
+    if login_session['user_id'] = restaurant.user_id:
+        return render_template('menu.html', items = items, restaurant = restaurant)
+    else:
+        return render_template('publicmenu.html', items = items, restaurant = restaurant, creator = creator)
      
 
 
