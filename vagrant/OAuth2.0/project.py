@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Restaurant, MenuItem
+from database_setup import Base, Restaurant, MenuItem, User
 
 #new imports for creating unique session token
 from flask import session as login_session
