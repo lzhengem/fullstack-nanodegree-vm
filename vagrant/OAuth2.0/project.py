@@ -106,6 +106,14 @@ def gconnect():
     login_session['picture'] = data["picture"]
     login_session['email'] = data["email"]
 
+    #check to see if user is found in database and then populate the login_session['user_id']
+    user_id = getUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+    user = getUserInfo(user_id)
+    login_session['user_id'] = user.user_id
+   
+
     output = ''
     output += '<h1>Welcome,'
     output += login_session['username']
