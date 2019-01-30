@@ -1,4 +1,4 @@
 __pycache__
 *.pyc
 .vagrant
-client_secrets.json
+*client_secrets.json
