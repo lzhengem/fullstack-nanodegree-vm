@@ -93,8 +93,10 @@ def gconnect():
         return response
     #store the access token in the sessions for later use
     # login_session['credentials'] = credentials
+    login_session['provider'] = 'google'
     login_session['access_token'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
+    response = make_response(json.dumps('Successfully Connected user',200))
 
     #get user info from gplus
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
@@ -175,9 +177,9 @@ def fbconnect():
     result = h.request(url, 'GET')[1]
 
     #use token to get user info from API
-    userinfo_url = "https://graph.facebook.com/v2.2/me"
+    userinfo_url = "https://graph.facebook.com/v2.8/me"
     #strip expire tag from access token
-    token = result.split("&")[0]
+    token = result.split(",")[0].split(':')[1].replace('"','')
 
     url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % token
     h = httplib2.Http()
@@ -192,7 +194,7 @@ def fbconnect():
     login_session['facebook_id'] = data['id']
 
     #get user picture
-    url = 'https://graph.facebook.com/v2.2/me/picture?%s&redirect=0&height=200&width=200' % token
+    url = 'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
@@ -215,7 +217,7 @@ def fbconnect():
     print "done!"
     return output
 
-@app.route('/fbdisconnect')
+@app.route('/fbdisconnect/')
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
     url = 'https://graph.facebook.com/%s/permissions' % facebook_id
@@ -227,6 +229,31 @@ def fbdisconnect():
     del login_session['user_id']
     del login_session['facebook_id']
     return "you have been logged out"
+
+
+@app.route('/disconnect')
+def disconnect():
+    if 'provider' in login_session:
+        if login_session['provider'] == 'google':
+            gdisconnect()
+            del login_session['gplus_id']
+            del login_session['credentials']
+        if login_session['provider'] == 'facebook':
+            fbdisconnect()
+            del login_session['facebook']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        del login_session['user_id']
+        del login_session['provider']
+        flash("You have successfully been logged out")
+        return redirect(url_for('showRestaurants'))
+    else:
+        flash("You were not logged in to begin with!")
+        redirect(url_for('showRestaurants'))
+
+
+
 
 #JSON APIs to view Restaurant Information
 @app.route('/restaurant/<int:restaurant_id>/menu/JSON')
