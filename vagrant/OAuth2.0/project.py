@@ -366,7 +366,6 @@ def newMenuItem(restaurant_id):
         flash('New Menu %s Item Successfully Created' % (newItem.name))
         return redirect(url_for('showMenu', restaurant_id = restaurant_id))
     else:
-        flash('You are not the owner of this restaurant.')
         return render_template('newmenuitem.html', restaurant_id = restaurant_id)
 
 #Edit a menu item
