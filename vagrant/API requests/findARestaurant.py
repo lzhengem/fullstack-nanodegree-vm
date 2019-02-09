@@ -4,11 +4,13 @@ import httplib2
 
 import sys
 import codecs
+import os
+
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
-foursquare_client_id = "PASTE_YOUR_ID_HERE"
-foursquare_client_secret = "YOUR_SECRET_HERE"
+foursquare_client_id = os.environ.get("FOURSQUARE_ID")
+foursquare_client_secret = os.environ.get("FOURSQUARE_SECRET")
 
 
 def findARestaurant(mealType,location):
