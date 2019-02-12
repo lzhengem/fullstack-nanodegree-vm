@@ -10,7 +10,7 @@ sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
 foursquare_client_id = os.environ.get("FOURSQUARE_ID")
 foursquare_client_secret = os.environ.get("FOURSQUARE_SECRET")
-google_api_key = os.environ.get("GOOGLE_SECRET")
+google_api_key = os.environ.get("GOOGLE_KEY")
 
 def getGeocodeLocation(inputString):
     #Replace Spaces with '+' in URL
@@ -54,7 +54,7 @@ def findARestaurant(mealType, location):
         else:
             imageURL = "http://pixabay.com/get/8926af5eb597ca51ca4c/1433440765/cheeseburger-34314_1280.png?direct"
 
-        restaurantInfo = {'name':restaurant_name, 'address':restaurant_address, 'image':imageURL}
+        restaurantInfo = {'restaurant_name':restaurant_name, 'restaurant_address':restaurant_address, 'restaurant_image':imageURL}
         #print "Restaurant Name: %s " % restaurantInfo['name']
         #print "Restaurant Address: %s " % restaurantInfo['address']
         #print "Image: %s \n " % restaurantInfo['image']
