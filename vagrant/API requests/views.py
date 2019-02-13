@@ -47,7 +47,7 @@ def all_restaurants_handler():
             # print 'all:' 
             # print all_restaurant
         else:
-            return jsonify({"error":"No Restaurants Found for %s in %s" % (mealType, location)})
+            return jsonify({"error":"No Restaurants Found for %s in %s" % (mealtype, location)})
 
     
     
