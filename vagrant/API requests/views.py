@@ -72,7 +72,7 @@ def restaurant_handler(id):
         return jsonify(restaurant.serialize)
     elif request.method == 'DELETE':
         session.delete(restaurant)
-        return "Restaurant deleted"
+        return jsonify({"message": "Restaurant deleted"})
 
 
 if __name__ == '__main__':
