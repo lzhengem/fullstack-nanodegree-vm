@@ -53,10 +53,24 @@ def all_restaurants_handler():
     
 @app.route('/restaurants/<int:id>', methods = ['GET','PUT', 'DELETE'])
 def restaurant_handler(id):
-  #YOUR CODE HERE
-  if request.method == 'GET':
+    #YOUR CODE HERE
     restaurant = session.query(Restaurant).filter_by(id = id).one()
-    return jsonify(restaurant.serialize)
+    if request.method == 'GET':
+        return jsonify(restaurant.serialize)
+    elif request.method == 'PUT':
+        name = request.args.get('name')
+        image = request.args.get('image')
+        location = request.args.get('location')
+        if name:
+            restaurant.restaurant_name = name
+        if image:
+            restaurant.restaurant_image = image
+        if location:
+            restaurant.restaurant_location = location
+        session.add(restaurant)
+        session.commit()
+        return jsonify(restaurant.serialize)
+
 
 if __name__ == '__main__':
     app.debug = True
