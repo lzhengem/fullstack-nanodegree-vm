@@ -55,7 +55,8 @@ def all_restaurants_handler():
 def restaurant_handler(id):
   #YOUR CODE HERE
   if request.method == 'GET':
-    return 'hi'
+    restaurant = session.query(Restaurant).filter_by(id = id).one()
+    return jsonify(restaurant.serialize)
 
 if __name__ == '__main__':
     app.debug = True
