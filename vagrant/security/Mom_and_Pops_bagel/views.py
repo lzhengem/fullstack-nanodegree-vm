@@ -24,7 +24,11 @@ def register_users():
         if request.args.get("username") and request.args.get("password"):
             username = request.args.get("username")
             password = request.args.get("password")
-            return ("got username %s and password %s" %(username, password))
+            user = User(username=username)
+            user.password_hash = user.hash_password(password)
+            session.add(user)
+            session.commit()
+            return ("New user '%s' created." % user.username)
 
 
 
