@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request, url_for, abort, g
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
 
 auth = HTTPBasicAuth() 
 
@@ -18,6 +18,13 @@ app = Flask(__name__)
 #ADD @auth.verify_password here
 
 #ADD a /users route here
+@app.route('/users', methods=["POST","GET"])
+def register_users():
+    if request.method == "POST":
+        if request.args.get("username") and request.args.get("password"):
+            username = request.args.get("username")
+            password = request.args.get("password")
+            return ("got username %s and password %s" %(username, password))
 
 
 
