@@ -6,6 +6,18 @@ from passlib.apps import custom_app_context as pwd_context
 Base = declarative_base()
 
 #ADD YOUR USER MODEL HERE
+class User(Base):
+    __tablename__ = 'user'
+    username = Column(String, primary_key=True)
+    password_hash = Column(String)
+
+    @property
+    def serialize(self):
+        return {
+        'username' : self.username,
+        }
+
+    
 
 class Bagel(Base):
     __tablename__ = 'bagel'
