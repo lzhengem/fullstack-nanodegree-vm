@@ -8,7 +8,7 @@ from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth() 
 
 
-engine = create_engine('sqlite:///bagelShop.db')
+engine = create_engine('sqlite:///bagelShop.db',connect_args={'check_same_thread':False})
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
@@ -16,24 +16,39 @@ session = DBSession()
 app = Flask(__name__)
 
 #ADD @auth.verify_password here
+@auth.verify_password
+def verify_password(username, password):
+    user = session.query(User).filter_by(username=username).first()
+    if not user or not user.verify_password(password):
+        return False
+    g.user = user
+    return True
+
+
 
 #ADD a /users route here
-@app.route('/users', methods=["POST","GET"])
-def register_users():
-    if request.method == "POST":
-        if request.args.get("username") and request.args.get("password"):
-            username = request.args.get("username")
-            password = request.args.get("password")
-            user = User(username=username)
-            user.password_hash = user.hash_password(password)
-            session.add(user)
-            session.commit()
-            return ("New user '%s' created." % user.username)
+@app.route('/users', methods=["POST"])
+def new_user():
+    username = request.json.get("username")
+    password = request.json.get("password")
+    if username is None or password is None:
+        print "missing arguments"
+        abort(400)
+    if session.query(User).filter_by(username = username).first() is not None:
+        print("existing user")
+        return jsonify({'message': "user already exists"})
+    user = User(username=username)
+    user.hash_password(password)
+    session.add(user)
+    session.commit()
+    return jsonify({'username' : user.username}),201
+        
 
 
 
 @app.route('/bagels', methods = ['GET','POST'])
 #protect this route with a required login
+@auth.login_required
 def showAllBagels():
     if request.method == 'GET':
         bagels = session.query(Bagel).all()
