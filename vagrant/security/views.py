@@ -19,6 +19,13 @@ def verify_password(username, password):
         return False
     g.user = user
     return True
+    
+#get an auth token
+@app.route('/token')
+@auth.login_required
+def get_auth_token():
+    token = g.user.generate_auth_token()
+    return jsonify({'token': token.decode('ascii')})
 
 @app.route('/api/users', methods=['POST'])
 def new_user():
