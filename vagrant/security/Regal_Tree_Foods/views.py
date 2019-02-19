@@ -9,7 +9,7 @@ from flask_httpauth import HTTPBasicAuth
 #imports for google login
 from oauth2client.client import flow_from_clientsecrets #creats a flow from our client secret, a json formated style that stores  client id, client secret and other oauth2.0 parameters
 from oauth2client.client import FlowExchangeError #if running into error while exchanging authorization token for access token
-from flask import make_response
+from flask import make_response, render_template
 import httplib2 #HTTP client library in python
 auth = HTTPBasicAuth()
 
@@ -110,7 +110,9 @@ def showCategoriedProducts(category):
         vegetable_items = session.query(Product).filter_by(category = 'vegetable').all()
         return jsonify(produce_products = [p.serialize for p in produce_items])
 
-
+@app.route('/clientOAuth')
+def start():
+    return render_template('clientOAuth.html')
 @app.route('/oauth/<provider>',methods = ['POST'])
 def login(provider):
     if provider == 'google':
