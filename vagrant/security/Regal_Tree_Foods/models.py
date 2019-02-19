@@ -22,8 +22,13 @@ class User(Base):
 
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
-    #Add a method to generate auth tokens here
     
+    #Add a method to generate auth tokens here. generates a token like yJhbGciOiJIUzUxMiIsIm...
+    def generate_auth_token(self, expiration=6000):
+        s = Serializer(secret_key,expires_in=expiration)
+        return s.dumps({'id': self.id})
+
+
     #Add a method to verify auth tokens here
 
 class Product(Base):
