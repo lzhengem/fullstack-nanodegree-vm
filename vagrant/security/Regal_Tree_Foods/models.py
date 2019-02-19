@@ -28,8 +28,8 @@ class User(Base):
         s = Serializer(secret_key,expires_in=expiration)
         return s.dumps({'id': self.id})
 
-
     #Add a method to verify auth tokens here. returns a user id
+    @staticmethod
     def verify_auth_token(token):
         s = Serializer(secret_key)
         try:
