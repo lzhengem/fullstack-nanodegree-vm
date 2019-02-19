@@ -5,6 +5,12 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 
 from flask_httpauth import HTTPBasicAuth
+
+#imports for google login
+from oauth2client.client import flow_from_clientsecrets #creats a flow from our client secret, a json formated style that stores  client id, client secret and other oauth2.0 parameters
+from oauth2client.client import FlowExchangeError #if running into error while exchanging authorization token for access token
+from flask import make_response
+import httplib2 #HTTP client library in python
 auth = HTTPBasicAuth()
 
 
@@ -103,6 +109,51 @@ def showCategoriedProducts(category):
     if category == 'vegetable':
         vegetable_items = session.query(Product).filter_by(category = 'vegetable').all()
         return jsonify(produce_products = [p.serialize for p in produce_items])
+
+
+@app.route('/oauth/<provider>',methods = ['POST'])
+def login(provider):
+    if provider == 'google':
+        #STEP 1 - Parse the auth code
+        auth_code = request.json.get('auth_code')
+        #STEP 2 - Exchange for token
+        try:
+            oauth_flow = flow_from_clientsecrets('client_secrets.json',scope='')
+            oauth_flow.redirect_uri = 'postmessage'
+            credentials = oauth_flow.step2_exchange(auth_code)
+        except FlowExchangeError:
+            response = make_response(json.jumps('Failed to upgrade the authorizaton code.'), 401)
+            response.headers['Content-type'] = 'application/json'
+            return response
+        #STEP 3 - FInd user or make a new one
+
+        #get user info
+        h = httplib2.Http()
+        userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        params = {'access_token': credentials.access_token, 'alt': 'json'}
+        answer = requests.get(userinfo_url, params=params)
+
+        data = answer.json()
+        name = data['name']
+        picture = data['picture']
+        email = data['email']
+
+        #see if user exists, if it doesn't, make a new one
+        user = session.query(User).filter_by(email=email).first()
+        if not user:
+            user = User(username = name, picture = picture, email=email)
+            session.add(user)
+            session.commit()
+
+        #step 4 - Make token
+        token = user.generate_auth_token(600)
+
+        #STEP 5 - send back token to the client
+        return jsonify({'token' : token.decode('ascii')})
+
+        # return jsonify({'token' : token.decode('ascii'),'duration':600})
+    else:
+        return 'Unrecoginized Provider'
     
 
 
