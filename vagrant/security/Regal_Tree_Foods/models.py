@@ -29,7 +29,18 @@ class User(Base):
         return s.dumps({'id': self.id})
 
 
-    #Add a method to verify auth tokens here
+    #Add a method to verify auth tokens here. returns a user id
+    def verify_auth_token(token):
+        s = Serializer(secret_key)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            print 'This token has expired'
+            return None
+        except BadSignature:
+            print 'This is an invalid token'
+            return None
+        return data['id']
 
 class Product(Base):
     __tablename__ = 'product'
