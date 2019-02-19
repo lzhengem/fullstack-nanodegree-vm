@@ -1,5 +1,5 @@
 from models import Base, User
-from flask import Flask, jsonify, request, url_for, abort
+from flask import Flask, jsonify, request, url_for, abort, g
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
