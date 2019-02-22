@@ -19,14 +19,10 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 app = Flask(__name__)
 
-
-
-
-app = Flask(__name__)
 #ADD RATE LIMITING CODE HERE
 
 
-
+@ratelimit(limit=60,per=60) #only allow 60 requests per 60 seconds
 @app.route('/catalog')
 def getCatalog():
     items = session.query(Item).all()
