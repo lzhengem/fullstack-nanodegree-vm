@@ -41,6 +41,8 @@ def get_view_rate_limit():
 def on_over_limit(limit):
     return (jsonify({'data':'You hit the rate limit','error':'429'}),429)
 
+#basically this decorator takes in the function like index() and it will check to see if it is over the limit
+#if it is over the limit, then it will return on_over_limit. If it is not over the limit, it will return what index() returns
 def ratelimit(limit, per=300, send_x_headers=True,
               over_limit=on_over_limit,
               scope_func=lambda: request.remote_addr,
@@ -52,7 +54,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
                 return over_limit(rlimit) #if it is over the limit, return a message that tells them that theyve hit the limit
-            return f(*args, **kwargs) #if it is not over the limit, return f with args?
+            return f(*args, **kwargs) #if it is not over the limit, return the original f function
         return update_wrapper(rate_limited, f)
     return decorator
 
