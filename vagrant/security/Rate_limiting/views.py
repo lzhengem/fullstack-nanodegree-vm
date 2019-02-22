@@ -9,7 +9,6 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 
-
 class RateLimit(object):
     #give extra 10 seconds for key to expire in redis so that badly synchronized clocks between workers and redis server do not cause problems
     expiration_window = 10
@@ -20,34 +19,28 @@ class RateLimit(object):
     def __init__(self, key_prefix, limit, per, send_x_headers):
         #reset keeps timestamp to indicate when a request limit can reset itself
         #why did they want to divide by per and then multiply by per? why don't they just add per to the current time?
-        #time reset does not start from when it is first accessed - it starts from the last interval. (so if you accessed it at 1:15, but its time limit is every half hour, then the time actually started at 1:00, and will reset at 1:30)
-        self.reset = (int(time.time()) // per) * per + per
+        #time reset does not start from when it is first accessed - it starts from the last interval. (so if you accessed it at 1:15, but its time limit is every half hour, then the time actually started at 1:00, and will reset at 1:30)        
+        self.reset = (int(time.time()) // per) * per + per #when it can reset itself (in unix time)
         self.key = key_prefix + str(self.reset)
         self.limit = limit
         self.per = per
         self.send_x_headers = send_x_headers
 
         #use a pipeline so make sure to never increment a key without also setting the key expiration in case an exceptin happens between those lines
-        p = redis.pipeline()
-        #increment value of pipeline
-        p.incr(self.key)
-        #set it to expire based on reset value and expirationn window
-        p.expireat(self.key, self.reset + self.expiration_window)
-        self.current = min(p.execute()[0], limit)
-    #calculate how many remaining requests 
-    remaining = property(lambda x: x.limit - x.current)
-    #check to see if hit the rate limit
-    over_limit = property(lambda x: x.current >= x.limit)
+        p = redis.pipeline() #make sure to increment key and set expiration at same time.
+        p.incr(self.key) #increment pipeline
+        p.expireat(self.key, self.reset + self.expiration_window) #set to expire at reset value + expiration window
+        self.current = min(p.execute()[0], limit) #current is how many requests currently made
 
-#gets the view_rate_limit attribute from g in flask
+    remaining = property(lambda x: x.limit - x.current) #how many remaining requests available until time expires
+    over_limit = property(lambda x: x.current >= x.limit) #returns true if requests made hit or exceeds limit
+
 def get_view_rate_limit():
-    return getattr(g, '_view_rate_limit', None)
+    return getattr(g, '_view_rate_limit', None) #_view_rate_limit will be of class RateLimit
 
-#a messafe for when user has reached their limit, with 429 error (which means too many requests)
 def on_over_limit(limit):
     return (jsonify({'data':'You hit the rate limit','error':'429'}),429)
 
-#create ratelimit that wraps around decorator method 
 def ratelimit(limit, per=300, send_x_headers=True,
               over_limit=on_over_limit,
               scope_func=lambda: request.remote_addr,
@@ -55,23 +48,21 @@ def ratelimit(limit, per=300, send_x_headers=True,
     def decorator(f):
         def rate_limited(*args, **kwargs):
             key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
-            #use RateLimit class, and store it in g as view_rate_limit
             rlimit = RateLimit(key, limit, per, send_x_headers)
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
-                return over_limit(rlimit)
-            return f(*args, **kwargs)
+                return over_limit(rlimit) #if it is over the limit, return a message that tells them that theyve hit the limit
+            return f(*args, **kwargs) #if it is not over the limit, return f with args?
         return update_wrapper(rate_limited, f)
     return decorator
 
 
 
 
-#append number of remaining requests, the limit for the endpoint, and time until limit resets itself inside header of each response
+#after the request, if this resource requests to send headers, append the limi status to the headers
 @app.after_request
 def inject_x_rate_headers(response):
     limit = get_view_rate_limit()
-    #the rate limit feature can be turned off if send_x_headers is set to False
     if limit and limit.send_x_headers:
         h = response.headers
         h.add('X-RateLimit-Remaining', str(limit.remaining))
