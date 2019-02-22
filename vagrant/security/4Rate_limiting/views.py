@@ -51,7 +51,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
         def rate_limited(*args, **kwargs):
             key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
             rlimit = RateLimit(key, limit, per, send_x_headers)
-            g._view_rate_limit = rlimit
+            g._view_rate_limit = rlimit #set g._view_rate_limit to our limit class so that it can be used to send the headers back after the request
             if over_limit is not None and rlimit.over_limit:
                 return over_limit(rlimit) #if it is over the limit, return a message that tells them that theyve hit the limit
             return f(*args, **kwargs) #if it is not over the limit, return the original f function
